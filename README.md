@@ -1,1 +1,1 @@
-# chat_ui
+# Ollama Chat UI
