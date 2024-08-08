@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat App</title>
+        {% load static %}
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{% static 'img/favicon.ico' %}"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown.min.css"
+        />
+        <link rel="stylesheet" href="{% static 'css/reset.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/app.css' %}" />
+        <meta name="csrf-token" content="{{ csrf_token }}" />
+    </head>
+    <body>
+        <div id="wrap">
+            <nav class="open">
+                <div id="nav_header">
+                    <button class="nav_toggle"></button>
+                    <button class="new_chat"></button>
+                </div>
+                <ul id="chat_list"></ul>
+            </nav>
+            <main>
+                <div>
+                    <div id="main_header">
+                        <div id="main_header_left" class="closed">
+                            <button class="nav_toggle"></button>
+                            <button class="new_chat"></button>
+                        </div>
+                        <button id="set_model">llama3.1</button>
+                    </div>
+                    <ul class="chats" id="chat_messages"></ul>
+                </div>
+                <div id="empty_block"></div>
+                <div id="chat_input">
+                    <form>
+                        <input
+                            type="text"
+                            id="prompt"
+                            placeholder="Send a message"
+                        />
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <script src="{% static 'js/app.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    </body>
+</html>
