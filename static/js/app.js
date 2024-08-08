@@ -36,11 +36,11 @@ function toggleNav() {
 
 // Fetch chat list
 fetch("/api/chats/")
-.then((response) => response.json())
-.then((data) => {
-    chats = data;
-    renderChatList();
-});
+    .then((response) => response.json())
+    .then((data) => {
+        chats = data;
+        renderChatList();
+    });
 
 function renderChatList() {
     chatList.innerHTML = "";
@@ -60,7 +60,27 @@ chatList.addEventListener("click", (event) => {
 
 newChatButtons.forEach((button) => {
     button.addEventListener("click", () => {
-        // Handle new chat creation
+        const chatSubject = prompt("Enter chat subject:");
+
+        if (chatSubject) {
+            fetch("/api/chats/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({ subject: chatSubject }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    chats.push(data); // 채팅방 목록에 새 채팅방 추가
+                    renderChatList(); // 목록 다시 렌더링
+                    loadMessages(data.id); // 새 채팅방의 메시지를 로드
+                })
+                .catch((error) => {
+                    console.error("Error creating new chat:", error);
+                });
+        }
     });
 });
 
@@ -144,7 +164,9 @@ function renderMessages() {
     chatMessages.innerHTML = "";
     messages.forEach((message, index) => {
         const li = document.createElement("li");
-        li.className = message.is_user ? "user markdown-body" : "bot markdown-body";
+        li.className = message.is_user
+            ? "user markdown-body"
+            : "bot markdown-body";
         li.innerHTML = marked.parse(message.content);
         chatMessages.appendChild(li);
     });
