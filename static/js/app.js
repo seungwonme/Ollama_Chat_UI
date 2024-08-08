@@ -1,9 +1,9 @@
 const navToggle = document.querySelectorAll(".nav_toggle");
 const newChatButtons = document.querySelectorAll(".new_chat");
 const chatList = document.getElementById("chat_list");
-const chatMessages = document.getElementById("chat_messages");
-const promptInput = document.getElementById("prompt");
-const form = document.querySelector("#chat_input form");
+const chatMessages = document.getElementById("messages");
+const form = document.querySelector("#message_input form");
+const textarea = document.querySelector("#message_input textarea");
 let csrfToken = document
     .querySelector('meta[name="csrf-token"]')
     .getAttribute("content");
@@ -105,21 +105,34 @@ function loadMessages(chatId) {
 function renderMessages() {
     chatMessages.innerHTML = "";
     messages.forEach((message) => {
-        const li = document.createElement("li");
-        li.className = message.is_user
-            ? "user markdown-body"
-            : "bot markdown-body";
-        li.innerHTML = marked.parse(message.content);
-        chatMessages.appendChild(li);
+        const wrapper = document.createElement("div");
+        const div = document.createElement("div");
+        if (message.is_user) {
+            wrapper.className = "user_wrapper";
+            div.className = "user markdown-body";
+        } else {
+            wrapper.className = "bot_wrapper";
+            div.className = "bot markdown-body";
+        }
+        div.innerHTML = marked.parse(message.content);
+        wrapper.appendChild(div);
+        chatMessages.appendChild(wrapper);
     });
 }
+
+textarea.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        setTimeout(() => form.dispatchEvent(new Event("submit")), 0);
+    }
+});
 
 form.addEventListener("submit", handleSubmit);
 
 function handleSubmit(event) {
     event.preventDefault();
 
-    const prompt = promptInput.value;
+    const prompt = textarea.value;
     if (prompt.trim() === "" || isStreaming) {
         console.log("Empty prompt or already streaming");
         return;
@@ -128,12 +141,9 @@ function handleSubmit(event) {
     const newMessage = { content: prompt, is_user: true };
 
     messages.push(newMessage);
-    renderMessages();
-
-    promptInput.value = "";
+    textarea.value = "";
     isStreaming = true;
 
-    // 미리 새로운 bot message li를 추가
     const newBotMessage = { content: "", is_user: false };
     messages.push(newBotMessage);
     renderMessages();
@@ -164,7 +174,10 @@ function handleSubmit(event) {
 
                 const chunk = decoder.decode(value);
                 messages[botMessageIndex].content += chunk; // 기존 메시지에 스트림 내용을 추가
-                updateBotMessage(botMessageIndex); // 업데이트된 메시지만 갱신
+                const botMessage = chatMessages.children[botMessageIndex].querySelector("div");
+                botMessage.innerHTML = marked.parse(
+                    messages[botMessageIndex].content
+                );
 
                 return reader.read().then(processText);
             });
@@ -173,12 +186,6 @@ function handleSubmit(event) {
             console.error("Error:", error);
             isStreaming = false;
         });
-}
-
-function updateBotMessage(index) {
-    const chatMessages = document.getElementById("chat_messages");
-    const li = chatMessages.children[index];
-    li.innerHTML = marked.parse(messages[index].content);
 }
 
 /* ~main */

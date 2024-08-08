@@ -40,18 +40,19 @@
                         </div>
                         <button id="set_model">gemma2</button>
                     </div>
-                    <ul class="chats" id="chat_messages"></ul>
+                    <div id="messages"></div>
                 </div>
                 <div id="empty_block"></div>
-                <div id="chat_input">
-                    <form>
-                        <input
-                            type="text"
-                            id="prompt"
-                            placeholder="Send a message"
-                        />
-                        <button type="submit">Send</button>
-                    </form>
+                <div id="message_input_wrapper">
+                    <div id="message_input">
+                        <form>
+                            <textarea
+                                id="prompt"
+                                placeholder="Send a message"
+                            ></textarea>
+                            <button type="submit">Send</button>
+                        </form>
+                    </div>
                 </div>
             </main>
         </div>
