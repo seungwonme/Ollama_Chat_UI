@@ -174,7 +174,7 @@ div#chat_input > form > input {
 li.user {
     width: 75%;
     padding: 10px 20px;
-    background-color: #363a3d;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 30px;
     margin-left: 25%;
 }

@@ -12,6 +12,7 @@ let navState = "open";
 let chats = [];
 let messages = [];
 let currentChatId = null;
+let isStreaming = false;
 
 /* sidebar toggle */
 
@@ -54,13 +55,16 @@ function renderChatList() {
 }
 
 chatList.addEventListener("click", (event) => {
+    if (chats.length === 0) {
+        return;
+    }
     const chatId = event.target.id;
     loadMessages(chatId);
 });
 
 newChatButtons.forEach((button) => {
     button.addEventListener("click", () => {
-        const chatSubject = prompt("Enter chat subject:");
+        const chatSubject = prompt("Enter chat subject:").trim();
 
         if (chatSubject) {
             fetch("/api/chats/", {
@@ -86,6 +90,8 @@ newChatButtons.forEach((button) => {
 
 /* ~sidebar */
 
+/* main */
+
 function loadMessages(chatId) {
     currentChatId = chatId;
     fetch(`/api/chats/${chatId}/messages/`)
@@ -96,7 +102,17 @@ function loadMessages(chatId) {
         });
 }
 
-/* chat input form */
+function renderMessages() {
+    chatMessages.innerHTML = "";
+    messages.forEach((message) => {
+        const li = document.createElement("li");
+        li.className = message.is_user
+            ? "user markdown-body"
+            : "bot markdown-body";
+        li.innerHTML = marked.parse(message.content);
+        chatMessages.appendChild(li);
+    });
+}
 
 form.addEventListener("submit", handleSubmit);
 
@@ -104,6 +120,11 @@ function handleSubmit(event) {
     event.preventDefault();
 
     const prompt = promptInput.value;
+    if (prompt.trim() === "" || isStreaming) {
+        console.log("Empty prompt or already streaming");
+        return;
+    }
+
     const newMessage = { content: prompt, is_user: true };
 
     messages.push(newMessage);
@@ -137,6 +158,7 @@ function handleSubmit(event) {
 
             return reader.read().then(function processText({ done, value }) {
                 if (done) {
+                    isStreaming = false;
                     return;
                 }
 
@@ -156,18 +178,7 @@ function handleSubmit(event) {
 function updateBotMessage(index) {
     const chatMessages = document.getElementById("chat_messages");
     const li = chatMessages.children[index];
-    li.className = "bot markdown-body";
     li.innerHTML = marked.parse(messages[index].content);
 }
 
-function renderMessages() {
-    chatMessages.innerHTML = "";
-    messages.forEach((message, index) => {
-        const li = document.createElement("li");
-        li.className = message.is_user
-            ? "user markdown-body"
-            : "bot markdown-body";
-        li.innerHTML = marked.parse(message.content);
-        chatMessages.appendChild(li);
-    });
-}
+/* ~main */
