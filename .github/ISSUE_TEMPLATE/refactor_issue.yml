@@ -1,5 +1,5 @@
-name: "코드 수정"
-description: 코드 수정 Issue 작성 양식입니다.
+name: "코드 리팩터링"
+description: 코드 리팩터링 Issue 작성 양식입니다.
 labels: ["refactor"]
 body:
   - type: markdown
@@ -10,15 +10,15 @@ body:
     id: refactor-description
     attributes:
       label: 작업 설명
-      description: 어떤 코드를 수정하시는 건지 적어주세요.
+      description: 어떤 코드를 리팩터링 하려는지 설명해주세요.
       placeholder: 설명을 적어주세요.
     validations:
       required: true
   - type: textarea
-    id: reproduction
+    id: reason
     attributes:
-      label: 수정 이유
-      description: 수정하는 이유에 대해서 설명해주세요.
-      placeholder: 설명을 적어주세요.
+      label: 리팩터링 이유
+      description: 리팩터링이 필요한 이유를 설명해주세요.
+      placeholder: 이유를 적어주세요.
     validations:
-      required: false
+      required: true
