@@ -3,14 +3,12 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 llm = ChatOllama(model="llama3.2-vision", temperature=0.3)
 
+messages = []
+
 
 async def generate_astream(messages: list):
+    response = ""
     async for chunk in llm.astream(messages):
+        response += str(chunk.content)
         yield str(chunk.content)
-
-
-messages = [
-    SystemMessage("You are a so kind chatbot."),
-    HumanMessage("Hello!"),
-    AIMessage("Hello!"),
-]
+    messages.append(AIMessage(content=response))
