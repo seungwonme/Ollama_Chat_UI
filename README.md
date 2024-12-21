@@ -1,19 +1,6 @@
-# Ollama Chat UI
-
-## How to run the project
-
-**Frontend**
+# Chat UI
 
 ```bash
-cd frontend
-pnpm install
-pnpm run dev
-```
-
-**Backend**
-
-```bash
-cd backend
 poetry install
-poetry run fastapi dev app/main.py
+poetry run streamlit run app.py
 ```
